@@ -67,3 +67,34 @@ def generate_time_series(batch_size, n_steps):
     series += 0.2 * np.sin((time - offsets2) * (freq2 * 20 + 20)) # + wave 2
     series += 0.1 * (np.random.rand(batch_size, n_steps) - 0.5)   # + noise
     return series[..., np.newaxis].astype(np.float32)
+
+
+
+def plot_dataset(x_data, y_data, y_pred=None):
+    fig, axes = plt.subplots(nrows=1, ncols=3, sharey=True, figsize=(15, 4))
+    for col in range(3):
+        plt.sca(axes[col])
+        if y_data.shape[-1]==1:
+            plot_series(col, x_data, y_data, y_pred=y_pred,
+                    y_label=("$x(t)$" if col==0 else None))
+        else:
+            plot_multiple_forecasts(col, x_valid, y_valid, y_pred, 
+                    y_label=("$x(t)$" if col==0 else None))
+    plt.show()
+
+def draw_data_points(idx, x_data, y_data, y_pred=None, irange=4):
+    plt.figure(figsize=(8,4))
+    plt.title('data %i'%idx)
+
+    plt.plot(x_data[idx], color='k', linewidth=4)
+    plt.plot(np.arange(1,y_data.shape[2]+1),y_data[idx][0], 
+             color='orangered', linewidth=0.1, marker='o')
+    plt.plot(np.arange(x_data.shape[1]+1,x_data.shape[1]+y_data.shape[2]+1),y_data[idx][y_data.shape[1]-1], 
+             color='orangered',linewidth=0.1, marker='o')
+
+    
+    if y_pred is not None:
+        plt.plot(np.arange(1,y_data.shape[2]+1),y_pred[idx][0], 
+                 color='orange',linewidth=0.1, marker='X', alpha=0.6)
+        plt.plot(np.arange(x_data.shape[1]+1,x_data.shape[1]+y_data.shape[2]+1),y_pred[idx][y_data.shape[1]-1], 
+                 color='orange',linewidth=0.1, marker='X', alpha=0.6)
